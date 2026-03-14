@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+.venv/
+
+# Secrets
+.env
+
+# Data (local DB and export content, keep dirs via .gitkeep)
+data/queue.db
+data/exports/*
+!data/exports/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# IDE
+.claude/
+.kilo/
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
