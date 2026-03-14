@@ -12,3 +12,6 @@ pytz>=2024.1
 
 # Database
 sqlite-utils>=3.35.0
+
+# Shared data layer (optional, install via: pip install -e ../yt-shared-data)
+# yt-shared-data  # editable install, not from PyPI
