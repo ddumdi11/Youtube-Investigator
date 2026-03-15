@@ -311,20 +311,23 @@ def channel(identifier, days, max_videos, export, output):
             console.print(json.dumps(summary, indent=2, ensure_ascii=False))
 
         # Sync to shared database
-        if shared_sync.is_available():
-            shared_sync.show_lock_warning()
-            synced = shared_sync.sync_analysis(analysis)
-            console.print(
-                f"\n[dim]Shared DB: Kanal + {synced} Videos synchronisiert[/dim]"
-            )
-            shared_sync.show_gaps()
-            shared_sync.release_lock()
+        locked = False
+        try:
+            if shared_sync.is_available():
+                locked = shared_sync.acquire_lock_with_warning()
+                synced = shared_sync.sync_analysis(analysis)
+                console.print(
+                    f"\n[dim]Shared DB: Kanal + {synced} Videos synchronisiert[/dim]"
+                )
+                shared_sync.show_gaps()
+        finally:
+            if locked:
+                shared_sync.release_lock()
 
         console.print()
 
     except Exception as e:
         console.print(f"\n[red][X] Unerwarteter Fehler: {e}[/red]\n")
-        shared_sync.release_lock()
         raise click.Abort()
 
 
