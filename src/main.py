@@ -14,6 +14,7 @@ from src.quota.tracker import QuotaTracker
 from src.api.youtube_client import YouTubeClient
 from src.analysis.channel_stats import ChannelAnalyzer
 from src.export.json_export import JSONExporter
+from src import shared_sync
 
 console = Console()
 
@@ -308,6 +309,20 @@ def channel(identifier, days, max_videos, export, output):
             exporter = JSONExporter()
             summary = exporter.create_summary(analysis)
             console.print(json.dumps(summary, indent=2, ensure_ascii=False))
+
+        # Sync to shared database
+        locked = False
+        try:
+            if shared_sync.is_available():
+                locked = shared_sync.acquire_lock_with_warning()
+                synced = shared_sync.sync_analysis(analysis)
+                console.print(
+                    f"\n[dim]Shared DB: Kanal + {synced} Videos synchronisiert[/dim]"
+                )
+                shared_sync.show_gaps()
+        finally:
+            if locked:
+                shared_sync.release_lock()
 
         console.print()
 
